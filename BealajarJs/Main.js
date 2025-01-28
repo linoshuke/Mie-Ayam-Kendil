@@ -60,7 +60,13 @@ function showOrderModal(itemName, price) {
                 <label>Jumlah:</label>
                 <input type="number" min="1" value="1">
             </div>
-            <button class="confirm-order">Konfirmasi Pesanan</button>
+            <div class="customer-info">
+                <label>Nama:</label>
+                <input type="text" class="customer-name" placeholder="Masukkan nama Anda">
+                <label>Alamat:</label>
+                <textarea class="customer-address" placeholder="Masukkan alamat pengiriman"></textarea>
+            </div>
+            <button class="confirm-order">Pesan via WhatsApp</button>
             <button class="cancel-order">Batal</button>
         </div>
     `;
@@ -69,8 +75,30 @@ function showOrderModal(itemName, price) {
     
     // Add event listeners for modal buttons
     modal.querySelector('.confirm-order').addEventListener('click', () => {
-        const quantity = modal.querySelector('input').value;
-        alert(`Terima kasih! Pesanan ${quantity}x ${itemName} akan segera diproses.`);
+        const quantity = modal.querySelector('input[type="number"]').value;
+        const customerName = modal.querySelector('.customer-name').value;
+        const customerAddress = modal.querySelector('.customer-address').value;
+
+        if (!customerName || !customerAddress) {
+            alert('Mohon lengkapi nama dan alamat Anda');
+            return;
+        }
+
+        // Format pesan WhatsApp
+        const message = encodeURIComponent(
+            `*Pesanan Baru*\n\n` +
+            `Nama: ${customerName}\n` +
+            `Alamat: ${customerAddress}\n\n` +
+            `Pesanan: ${quantity}x ${itemName}\n` +
+            `Harga: ${price}\n` +
+            `Total: ${parseInt(price.replace(/\D/g, '')) * quantity}`
+        );
+
+        // Nomor WhatsApp bisnis (ganti dengan nomor yang sesuai)
+        const phoneNumber = '6281234567890'; // Format: kode negara tanpa +
+        
+        // Buka WhatsApp
+        window.open(`https://wa.me/${phoneNumber}?text=${message}`);
         modal.remove();
     });
 
@@ -181,6 +209,24 @@ styles.textContent = `
         margin-top: 1rem;
         border-radius: 4px;
         text-align: center;
+    }
+
+    .customer-info {
+        margin: 1rem 0;
+    }
+
+    .customer-info input,
+    .customer-info textarea {
+        width: 100%;
+        padding: 0.5rem;
+        margin: 0.5rem 0;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+
+    .customer-info textarea {
+        height: 80px;
+        resize: vertical;
     }
 `;
 document.head.appendChild(styles);

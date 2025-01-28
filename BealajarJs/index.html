@@ -3,17 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mie Ayam Kendil</title>
+    <meta name="description" content="Mie Ayam Kendil - Warung mie ayam dengan cita rasa authentic sejak 2010">
+    <meta name="keywords" content="mie ayam, mie ayam kendil, makanan, kuliner">
+    <title>Mie Ayam Kendil - Warung Mie Ayam Authentic</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="shortcut icon" href="/Aset/Logo.webp" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" crossorigin="anonymous">
+    <link rel="shortcut icon" href="/Aset/Logo.webp" type="image/webp">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 </head>
 <body>
-    <!-- Header Section -->
     <header>
         <nav class="navbar">
             <div class="logo">
-                <img src="/Aset/Logo.webp" alt="Mie Ayam Kendil Logo">
+                <img src="/Aset/Logo.webp" alt="Mie Ayam Kendil Logo" width="50" height="50">
                 <h1>Mie Ayam Kendil</h1>
             </div>
             <ul class="nav-links">
@@ -25,89 +27,111 @@
         </nav>
     </header>
 
-    <!-- Hero Section -->
-    <section id="home" class="hero">
-        <div class="hero-content">
-            <h1>Selamat Datang di Mie Ayam Kendil</h1>
-            <p>Nikmati kelezatan mie ayam authentic dengan cita rasa yang khas</p>
-            <a href="#menu" class="cta-button">Lihat Menu</a>
-        </div>
-    </section>
+    <main>
+        <section id="home" class="hero">
+            <div class="hero-content">
+                <h1>Selamat Datang di Mie Ayam Kendil</h1>
+                <p>Nikmati kelezatan mie ayam authentic dengan cita rasa yang khas</p>
+                <a href="#menu" class="cta-button">Lihat Menu</a>
+            </div>
+        </section>
 
-    <!-- Menu Section -->
-    <section id="menu" class="menu">
-        <h2>Menu Kami</h2>
-        <div class="menu-container">
-            <div class="menu-item">
-                <img src="/Aset/mie-ayam-original.jpg" alt="Mie Ayam Original">
-                <h3>Mie Ayam Original</h3>
-                <p>Mie ayam dengan topping ayam cincang special</p>
-                <span class="price">Rp 15.000</span>
-                <button class="order-button">Pesan Sekarang</button>
+        <section id="menu" class="menu">
+            <h2>Menu Kami</h2>
+            <div class="menu-container">
+                <article class="menu-item">
+                    <img src="/Aset/mie-ayam-original.jpg" alt="Mie Ayam Original" loading="lazy" width="300" height="200">
+                    <h3>Mie Ayam Original</h3>
+                    <p>Mie ayam dengan topping ayam cincang special</p>
+                    <span class="price">Rp 15.000</span>
+                    <button class="order-button" data-item="Mie Ayam Original" data-price="15000">Pesan Sekarang</button>
+                </article>
+                <article class="menu-item">
+                    <img src="/Aset/mie-ayam-bakso.jpg" alt="Mie Ayam Bakso" loading="lazy" width="300" height="200">
+                    <h3>Mie Ayam Bakso</h3>
+                    <p>Mie ayam dengan tambahan bakso sapi</p>
+                    <span class="price">Rp 20.000</span>
+                    <button class="order-button" data-item="Mie Ayam Bakso" data-price="20000">Pesan Sekarang</button>
+                </article>
+                <article class="menu-item">
+                    <img src="/Aset/mie-ayam-spesial.jpg" alt="Mie Ayam Spesial" loading="lazy" width="300" height="200">
+                    <h3>Mie Ayam Spesial</h3>
+                    <p>Mie ayam dengan topping lengkap</p>
+                    <span class="price">Rp 25.000</span>
+                    <button class="order-button" data-item="Mie Ayam Spesial" data-price="25000">Pesan Sekarang</button>
+                </article>
             </div>
-            <div class="menu-item">
-                <img src="/Aset/mie-ayam-bakso.jpg" alt="Mie Ayam Bakso">
-                <h3>Mie Ayam Bakso</h3>
-                <p>Mie ayam dengan tambahan bakso sapi</p>
-                <span class="price">Rp 20.000</span>
-                <button class="order-button">Pesan Sekarang</button>
-            </div>
-            <div class="menu-item">
-                <img src="/Aset/mie-ayam-spesial.jpg" alt="Mie Ayam Spesial">
-                <h3>Mie Ayam Spesial</h3>
-                <p>Mie ayam dengan topping lengkap</p>
-                <span class="price">Rp 25.000</span>
-                <button class="order-button">Pesan Sekarang</button>
-            </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- About Section -->
-    <section id="about" class="about">
-        <h2>Tentang Kami</h2>
-        <div class="about-content">
-            <img src="/Aset/store-front.jpg" alt="Mie Ayam Kendil Store">
-            <div class="about-text">
-                <p>Mie Ayam Kendil adalah warung mie ayam yang telah berdiri sejak tahun 2010. Kami menyajikan mie ayam dengan resep turun temurun dan bahan-bahan berkualitas.</p>
-                <p>Kenyamanan dan kepuasan pelanggan adalah prioritas kami.</p>
+        <section id="about" class="about">
+            <h2>Tentang Kami</h2>
+            <div class="about-content">
+                <img src="/Aset/store-front.jpg" alt="Mie Ayam Kendil Store" loading="lazy" width="400" height="300">
+                <div class="about-text">
+                    <p>Mie Ayam Kendil adalah warung mie ayam yang telah berdiri sejak tahun 2010. Kami menyajikan mie ayam dengan resep turun temurun dan bahan-bahan berkualitas.</p>
+                    <p>Kenyamanan dan kepuasan pelanggan adalah prioritas kami.</p>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Contact Section -->
-    <section id="contact" class="contact">
-        <h2>Hubungi Kami</h2>
-        <div class="contact-container">
-            <div class="contact-info">
-                <h3>Informasi Kontak</h3>
-                <p><i class="fas fa-map-marker-alt"></i> Jl. Contoh No. 123, Kota</p>
-                <p><i class="fas fa-phone"></i> +62 123-456-789</p>
-                <p><i class="fas fa-envelope"></i> info@mieayamkendil.com</p>
+        <section id="contact" class="contact">
+            <h2>Hubungi Kami</h2>
+            <div class="contact-container">
+                <div class="contact-info">
+                    <h3>Informasi Kontak</h3>
+                    <address>
+                        <p><i class="fas fa-map-marker-alt" aria-hidden="true"></i> Jl. Contoh No. 123, Kota</p>
+                        <p><i class="fas fa-phone" aria-hidden="true"></i> <a href="tel:+6289514656979">+62 895-1465-6979</a></p>
+                        <p><i class="fas fa-envelope" aria-hidden="true"></i> <a href="mailto:info@mieayamkendil.com">info@mieayamkendil.com</a></p>
+                    </address>
+                </div>
+                <div class="contact-form">
+                    <h3>Pesan via WhatsApp</h3>
+                    <form id="orderForm" onsubmit="sendWhatsAppMessage(event)" novalidate>
+                        <div class="form-group">
+                            <input type="text" id="customerName" placeholder="Nama Lengkap" required autocomplete="name">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" id="customerAddress" placeholder="Alamat Pengiriman" required autocomplete="street-address">
+                        </div>
+                        <div class="form-group">
+                            <input type="tel" id="customerPhone" placeholder="Nomor WhatsApp" required pattern="[0-9]+" autocomplete="tel">
+                        </div>
+                        <div class="form-group">
+                            <label for="menuSelection">Pilih Menu:</label>
+                            <select id="menuSelection" name="menuSelection" aria-label="Pilih Menu" required>
+                                <option value="">-- Pilih Menu --</option>
+                                <option value="Mie Ayam Original - Rp 15.000">Mie Ayam Original - Rp 15.000</option>
+                                <option value="Mie Ayam Bakso - Rp 20.000">Mie Ayam Bakso - Rp 20.000</option>
+                                <option value="Mie Ayam Spesial - Rp 25.000">Mie Ayam Spesial - Rp 25.000</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <input type="number" id="quantity" placeholder="Jumlah Pesanan" min="1" required>
+                        </div>
+                        <div class="form-group">
+                            <textarea id="additionalNotes" placeholder="Catatan Tambahan (Opsional)" maxlength="200"></textarea>
+                        </div>
+                        <button type="submit" class="whatsapp-button">
+                            <i class="fab fa-whatsapp" aria-hidden="true"></i> Pesan via WhatsApp
+                        </button>
+                    </form>
+                </div>
             </div>
-            <div class="contact-form">
-                <h3>Kirim Pesan</h3>
-                <form>
-                    <input type="text" placeholder="Nama" required>
-                    <input type="email" placeholder="Email" required>
-                    <textarea placeholder="Pesan" required></textarea>
-                    <button type="submit">Kirim</button>
-                </form>
-            </div>
-        </div>
-    </section>
+        </section>
+    </main>
 
-    <!-- Footer -->
     <footer>
         <div class="footer-content">
             <div class="social-links">
-                <a href="#"><i class="fab fa-facebook"></i></a>
-                <a href="#"><i class="fab fa-instagram"></i></a>
-                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#" aria-label="Facebook"><i class="fab fa-facebook" aria-hidden="true"></i></a>
+                <a href="#" aria-label="Instagram"><i class="fab fa-instagram" aria-hidden="true"></i></a>
+                <a href="#" aria-label="Twitter"><i class="fab fa-twitter" aria-hidden="true"></i></a>
             </div>
             <p>&copy; 2024 Mie Ayam Kendil. All rights reserved.</p>
         </div>
     </footer>
 
-    <script src="Main.js"></script>
+    <script src="Main.js" defer></script>
 </body>
 </html>
