@@ -1,6 +1,5 @@
-# Welcome to GitHub Desktop!
+# Welcome to My Proyek Web
 
-This is your README. READMEs are where you can communicate what your project is and how to use it.
+Web ini saya gunakan untuk kebutuhan belajar guna meendalami bidang web fornt end,
 
-Write your name on line 6, save it, and then head back to GitHub Desktop.
-Dede Ichsan R
+-Lino
