@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeOrderSystem();
     initializeContactForm();
     initializeAnimations();
-    initializeResponsive(); // Add responsive initialization
+    initializeResponsive();
 });
 
 // Navigation functionality
@@ -21,14 +21,19 @@ function initializeNavigation() {
     window.addEventListener('scroll', () => {
         if (window.scrollY > 100) {
             navbar.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
+            navbar.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
         } else {
             navbar.style.backgroundColor = '#fff';
+            navbar.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
         }
     });
 
     // Mobile menu toggle
     menuToggle.addEventListener('click', () => {
-        document.querySelector('.nav-links').classList.toggle('active');
+        const navLinks = document.querySelector('.nav-links');
+        navLinks.classList.toggle('active');
+        menuToggle.innerHTML = navLinks.classList.contains('active') ? 
+            '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
     });
 
     // Smooth scroll for navigation links
@@ -37,14 +42,23 @@ function initializeNavigation() {
             e.preventDefault();
             const targetId = this.getAttribute('href');
             const targetSection = document.querySelector(targetId);
-            targetSection.scrollIntoView({ behavior: 'smooth' });
+            const headerOffset = 80;
+            const elementPosition = targetSection.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+            window.scrollTo({
+                top: offsetPosition,
+                behavior: 'smooth'
+            });
+            
             // Close mobile menu after clicking
             document.querySelector('.nav-links').classList.remove('active');
+            menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
         });
     });
 }
 
-// Order system functionality with responsive design
+// Order system functionality
 function initializeOrderSystem() {
     const orderButtons = document.querySelectorAll('.order-button');
     
@@ -69,7 +83,7 @@ function showOrderModal(itemName, price) {
             <p>Harga: ${price}</p>
             <div class="quantity-selector">
                 <label>Jumlah:</label>
-                <input type="number" min="1" value="1">
+                <input type="number" min="1" value="1" max="20">
             </div>
             <div class="customer-info">
                 <input type="text" id="customerName" placeholder="Nama Anda" required>
@@ -83,31 +97,39 @@ function showOrderModal(itemName, price) {
     `;
 
     document.body.appendChild(modal);
+
+    const quantityInput = modal.querySelector('input[type="number"]');
+    quantityInput.addEventListener('input', function() {
+        if (this.value < 1) this.value = 1;
+        if (this.value > 20) this.value = 20;
+    });
     
-    // Tambahkan event listener untuk tombol WhatsApp
     modal.querySelector('.whatsapp-order').addEventListener('click', () => {
         const quantity = modal.querySelector('input[type="number"]').value;
         const customerName = modal.querySelector('#customerName').value;
         const customerAddress = modal.querySelector('#customerAddress').value;
         
         if (!customerName || !customerAddress) {
-            showErrorMessage('Mohon isi nama dan alamat Anda');
+            showNotification('Mohon isi nama dan alamat Anda', 'error');
             return;
         }
 
-        // Format pesan WhatsApp
-        const message = `Halo, saya ingin memesan:%0A%0A` +
-            `Item: ${itemName}%0A` +
-            `Jumlah: ${quantity}%0A` +
-            `Total Harga: ${price} x ${quantity}%0A%0A` +
-            `Nama: ${customerName}%0A` +
-            `Alamat: ${customerAddress}`;
+        const priceNum = parseInt(price.replace(/\D/g, ''));
+        const totalPrice = priceNum * quantity;
+        const formattedTotal = `Rp ${totalPrice.toLocaleString('id-ID')}`;
 
-        // Ganti nomor WhatsApp di bawah ini dengan nomor yang Anda inginkan
-        const phoneNumber = '6289514656979'; // Format: kode negara tanpa tanda +
+        const message = encodeURIComponent(
+            `Halo, saya ingin memesan:\n\n` +
+            `Item: ${itemName}\n` +
+            `Jumlah: ${quantity}\n` +
+            `Total Harga: ${formattedTotal}\n\n` +
+            `Nama: ${customerName}\n` +
+            `Alamat: ${customerAddress}`
+        );
+
+        const phoneNumber = '6289514656979';
         const whatsappURL = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${message}`;
         
-        // Buka WhatsApp di tab baru
         window.open(whatsappURL, '_blank');
         modal.remove();
     });
@@ -115,48 +137,48 @@ function showOrderModal(itemName, price) {
     modal.querySelector('.cancel-order').addEventListener('click', () => {
         modal.remove();
     });
-}
 
-// Contact form functionality with enhanced validation
-function initializeContactForm() {
-    const contactForm = document.querySelector('.contact-form form');
-    
-    contactForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const formData = new FormData(this);
-        const name = formData.get('name');
-        const email = formData.get('email');
-        const message = formData.get('message');
-        
-        if (validateForm(name, email, message)) {
-            showSuccessMessage();
-            this.reset();
+    // Close modal when clicking outside
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.remove();
         }
     });
 }
 
+// Contact form functionality
+function initializeContactForm() {
+    const contactForm = document.querySelector('.contact-form form');
+    
+    if (contactForm) {
+        contactForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = this.querySelector('input[type="text"]').value;
+            const email = this.querySelector('input[type="email"]').value;
+            const message = this.querySelector('textarea').value;
+            
+            if (validateForm(name, email, message)) {
+                showNotification('Pesan Anda telah terkirim! Kami akan segera menghubungi Anda.', 'success');
+                this.reset();
+            }
+        });
+    }
+}
+
 function validateForm(name, email, message) {
     if (!name || !email || !message) {
-        showErrorMessage('Mohon isi semua field yang diperlukan');
+        showNotification('Mohon isi semua field yang diperlukan', 'error');
         return false;
     }
     
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-        showErrorMessage('Mohon masukkan email yang valid');
+        showNotification('Mohon masukkan email yang valid', 'error');
         return false;
     }
     
     return true;
-}
-
-function showSuccessMessage() {
-    showNotification('Pesan Anda telah terkirim! Kami akan segera menghubungi Anda.', 'success');
-}
-
-function showErrorMessage(message) {
-    showNotification(message, 'error');
 }
 
 function showNotification(message, type) {
@@ -167,11 +189,12 @@ function showNotification(message, type) {
     document.body.appendChild(notification);
     
     setTimeout(() => {
-        notification.remove();
+        notification.classList.add('fade-out');
+        setTimeout(() => notification.remove(), 300);
     }, 3000);
 }
 
-// Animations and visual effects with performance optimization
+// Animations
 function initializeAnimations() {
     const menuItems = document.querySelectorAll('.menu-item');
     const observer = new IntersectionObserver((entries) => {
@@ -187,35 +210,25 @@ function initializeAnimations() {
     });
 }
 
-// Responsive design initialization
+// Responsive design
 function initializeResponsive() {
-    // Handle viewport changes
-    window.addEventListener('resize', debounce(() => {
-        adjustLayout();
-    }, 250));
+    const adjustLayout = debounce(() => {
+        document.body.classList.toggle('mobile-view', window.innerWidth <= 768);
+    }, 250);
 
+    window.addEventListener('resize', adjustLayout);
     adjustLayout();
 }
 
-// Helper function for performance
 function debounce(func, wait) {
     let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
+    return function(...args) {
         clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
+        timeout = setTimeout(() => func.apply(this, args), wait);
     };
 }
 
-function adjustLayout() {
-    const isMobile = window.innerWidth <= 768;
-    document.body.classList.toggle('mobile-view', isMobile);
-}
-
-// Add necessary styles with responsive design
+// Add styles
 const styles = document.createElement('style');
 styles.textContent = `
     .order-modal {
@@ -224,7 +237,7 @@ styles.textContent = `
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0, 0, 0, 0.5);
+        background: rgba(0, 0, 0, 0.7);
         display: flex;
         justify-content: center;
         align-items: center;
@@ -234,21 +247,22 @@ styles.textContent = `
     .modal-content {
         background: white;
         padding: 2rem;
-        border-radius: 8px;
+        border-radius: 12px;
         max-width: 90%;
         width: 400px;
-        margin: 0 1rem;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.2);
     }
 
     .notification {
         position: fixed;
         bottom: 20px;
         right: 20px;
-        padding: 1rem;
-        border-radius: 4px;
+        padding: 1rem 2rem;
+        border-radius: 8px;
         color: white;
         z-index: 1001;
         animation: slideIn 0.3s ease-out;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
     }
 
     .notification.success {
@@ -259,44 +273,9 @@ styles.textContent = `
         background: #f44336;
     }
 
-    .menu-toggle {
-        display: none;
-        background: none;
-        border: none;
-        font-size: 1.5rem;
-        cursor: pointer;
-        padding: 0.5rem;
-    }
-
-    @media (max-width: 768px) {
-        .menu-toggle {
-            display: block;
-        }
-
-        .nav-links {
-            display: none;
-            width: 100%;
-            position: absolute;
-            top: 100%;
-            left: 0;
-            background: white;
-            padding: 1rem;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .nav-links.active {
-            display: block;
-        }
-
-        .nav-links li {
-            display: block;
-            margin: 1rem 0;
-        }
-
-        .modal-content {
-            width: 95%;
-            margin: 0 auto;
-        }
+    .notification.fade-out {
+        opacity: 0;
+        transition: opacity 0.3s ease-out;
     }
 
     @keyframes slideIn {
@@ -313,7 +292,7 @@ styles.textContent = `
     .menu-item {
         opacity: 0;
         transform: translateY(20px);
-        transition: all 0.5s ease-in-out;
+        transition: all 0.5s ease-out;
     }
 
     .menu-item.visible {
@@ -321,36 +300,72 @@ styles.textContent = `
         transform: translateY(0);
     }
 
-    .customer-info {
-        margin: 1rem 0;
-    }
-
     .customer-info input,
     .customer-info textarea {
         width: 100%;
-        padding: 0.5rem;
-        margin-bottom: 0.5rem;
-        border: 1px solid #ddd;
-        border-radius: 4px;
+        padding: 0.8rem;
+        margin-bottom: 1rem;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.3s ease;
+    }
+
+    .customer-info input:focus,
+    .customer-info textarea:focus {
+        border-color: #e65100;
+        outline: none;
     }
 
     .customer-info textarea {
-        height: 80px;
+        height: 100px;
         resize: vertical;
+    }
+
+    .modal-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .whatsapp-order,
+    .cancel-order {
+        padding: 0.8rem 1.5rem;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        flex: 1;
     }
 
     .whatsapp-order {
         background-color: #25D366;
         color: white;
-        border: none;
-        padding: 0.5rem 1rem;
-        border-radius: 4px;
-        cursor: pointer;
-        margin-right: 0.5rem;
     }
 
     .whatsapp-order:hover {
         background-color: #128C7E;
+    }
+
+    .cancel-order {
+        background-color: #f5f5f5;
+        color: #333;
+    }
+
+    .cancel-order:hover {
+        background-color: #e0e0e0;
+    }
+
+    @media (max-width: 768px) {
+        .modal-content {
+            width: 95%;
+            padding: 1.5rem;
+        }
+
+        .modal-buttons {
+            flex-direction: column;
+        }
     }
 `;
 document.head.appendChild(styles);
