@@ -79,12 +79,17 @@ function showOrderModal(itemName, price) {
     modal.innerHTML = `
         <div class="modal-content">
             <h3>Konfirmasi Pesanan</h3>
-            <p>Item: ${itemName}</p>
-            <p>Harga: ${price}</p>
-            <div class="quantity-selector">
-                <label>Jumlah:</label>
-                <input type="number" min="1" value="1" max="20">
+            <div id="orderItems">
+                <div class="order-item">
+                    <p>Item: ${itemName}</p>
+                    <p>Harga: ${price}</p>
+                    <div class="quantity-selector">
+                        <label>Jumlah:</label>
+                        <input type="number" value="1" min="1" style="width: 60px;">
+                    </div>
+                </div>
             </div>
+            <button class="add-item-btn" disabled>+ Tambah Menu Lain</button>
             <div class="customer-info">
                 <input type="text" id="customerName" placeholder="Nama Anda" required>
                 <textarea id="customerAddress" placeholder="Alamat Pengiriman" required></textarea>
@@ -98,14 +103,89 @@ function showOrderModal(itemName, price) {
 
     document.body.appendChild(modal);
 
-    const quantityInput = modal.querySelector('input[type="number"]');
-    quantityInput.addEventListener('input', function() {
-        if (this.value < 1) this.value = 1;
-        if (this.value > 20) this.value = 20;
+    // Add new item functionality
+    const addItemBtn = modal.querySelector('.add-item-btn');
+    const orderItems = modal.querySelector('#orderItems');
+    
+    // Enable add item button when quantity is selected for current item
+    const firstQuantityInput = modal.querySelector('input[type="number"]');
+    firstQuantityInput.addEventListener('input', () => {
+        if (parseInt(firstQuantityInput.value) > 0) {
+            addItemBtn.disabled = false;
+        } else {
+            addItemBtn.disabled = true;
+        }
+    });
+    
+    addItemBtn.addEventListener('click', () => {
+        const menuItems = document.querySelectorAll('.menu-item');
+        const selectHTML = `
+            <select class="menu-select">
+                <option value="">Pilih Menu</option>
+                ${Array.from(menuItems).map(item => {
+                    const name = item.querySelector('h3').textContent;
+                    const price = item.querySelector('.price').textContent;
+                    return `<option value="${price}">${name}</option>`;
+                }).join('')}
+            </select>
+        `;
+
+        const newItem = document.createElement('div');
+        newItem.className = 'order-item';
+        newItem.innerHTML = `
+            ${selectHTML}
+            <div class="quantity-selector" style="display: none;">
+                <label>Jumlah:</label>
+                <input type="number" value="1" min="1" style="width: 60px;">
+            </div>
+            <button class="remove-item">Hapus</button>
+        `;
+
+        orderItems.appendChild(newItem);
+        addItemBtn.disabled = true;
+
+        const select = newItem.querySelector('.menu-select');
+        const quantityDiv = newItem.querySelector('.quantity-selector');
+        const quantityInput = quantityDiv.querySelector('input[type="number"]');
+
+        select.addEventListener('change', function() {
+            if (this.value) {
+                quantityDiv.style.display = 'block';
+            } else {
+                quantityDiv.style.display = 'none';
+                addItemBtn.disabled = true;
+            }
+        });
+
+        quantityInput.addEventListener('input', () => {
+            if (parseInt(quantityInput.value) > 0) {
+                addItemBtn.disabled = false;
+            } else {
+                addItemBtn.disabled = true;
+            }
+        });
+
+        newItem.querySelector('.remove-item').addEventListener('click', () => {
+            newItem.remove();
+            // Enable add item button after removing an item
+            const lastItem = orderItems.querySelector('.order-item:last-child');
+            if (lastItem) {
+                const lastQuantityInput = lastItem.querySelector('input[type="number"]');
+                if (lastQuantityInput && parseInt(lastQuantityInput.value) > 0) {
+                    addItemBtn.disabled = false;
+                }
+            }
+        });
+    });
+
+    const quantityInputs = modal.querySelectorAll('input[type="number"]');
+    quantityInputs.forEach(input => {
+        input.addEventListener('input', function() {
+            if (this.value < 1) this.value = 1;
+        });
     });
     
     modal.querySelector('.whatsapp-order').addEventListener('click', () => {
-        const quantity = modal.querySelector('input[type="number"]').value;
         const customerName = modal.querySelector('#customerName').value;
         const customerAddress = modal.querySelector('#customerAddress').value;
         
@@ -114,21 +194,70 @@ function showOrderModal(itemName, price) {
             return;
         }
 
-        const priceNum = parseInt(price.replace(/\D/g, ''));
-        const totalPrice = priceNum * quantity;
-        const formattedTotal = `Rp ${totalPrice.toLocaleString('id-ID')}`;
+        let totalPrice = 0;
+        let orderMessage = `Halo, saya ingin memesan:\n\n`;
 
-        const message = encodeURIComponent(
-            `Halo, saya ingin memesan:\n\n` +
-            `Item: ${itemName}\n` +
-            `Jumlah: ${quantity}\n` +
-            `Total Harga: ${formattedTotal}\n\n` +
-            `Nama: ${customerName}\n` +
-            `Alamat: ${customerAddress}`
-        );
+        const orderItems = modal.querySelectorAll('.order-item');
+        let hasValidOrder = false;
+
+        // Create a map to store combined quantities for same items
+        const itemMap = new Map();
+
+        orderItems.forEach((item, index) => {
+            const select = item.querySelector('.menu-select');
+            const quantity = parseInt(item.querySelector('input[type="number"]').value);
+            
+            let itemName, price;
+            if (index === 0) {
+                itemName = item.querySelector('p').textContent.replace('Item: ', '');
+                price = item.querySelector('p:nth-child(2)').textContent.replace('Harga: ', '');
+            } else {
+                if (select.value) {
+                    itemName = select.options[select.selectedIndex].text;
+                    price = select.value;
+                } else {
+                    return;
+                }
+            }
+
+            if (quantity < 1) return;
+
+            hasValidOrder = true;
+            const priceNum = parseInt(price.replace(/\D/g, ''));
+
+            // Combine quantities for same items
+            if (itemMap.has(itemName)) {
+                const existingItem = itemMap.get(itemName);
+                existingItem.quantity += quantity;
+                existingItem.total = existingItem.quantity * priceNum;
+            } else {
+                itemMap.set(itemName, {
+                    quantity: quantity,
+                    price: priceNum,
+                    total: quantity * priceNum
+                });
+            }
+        });
+
+        if (!hasValidOrder) {
+            showNotification('Mohon pilih minimal satu menu', 'error');
+            return;
+        }
+
+        // Generate order message from combined items
+        itemMap.forEach((value, key) => {
+            orderMessage += `${key}\n`;
+            orderMessage += `Jumlah: ${value.quantity}\n`;
+            orderMessage += `Subtotal: Rp ${value.total.toLocaleString('id-ID')}\n\n`;
+            totalPrice += value.total;
+        });
+
+        orderMessage += `Total Harga: Rp ${totalPrice.toLocaleString('id-ID')}\n\n`;
+        orderMessage += `Nama: ${customerName}\n`;
+        orderMessage += `Alamat: ${customerAddress}`;
 
         const phoneNumber = '6289514656979';
-        const whatsappURL = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${message}`;
+        const whatsappURL = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${encodeURIComponent(orderMessage)}`;
         
         window.open(whatsappURL, '_blank');
         modal.remove();
@@ -251,6 +380,8 @@ styles.textContent = `
         max-width: 90%;
         width: 400px;
         box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        max-height: 90vh;
+        overflow-y: auto;
     }
 
     .notification {
@@ -355,6 +486,57 @@ styles.textContent = `
 
     .cancel-order:hover {
         background-color: #e0e0e0;
+    }
+
+    .add-item-btn {
+        width: 100%;
+        padding: 0.8rem;
+        margin: 1rem 0;
+        background-color: #e65100;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .add-item-btn:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+    }
+
+    .add-item-btn:not(:disabled):hover {
+        background-color: #ff6f00;
+    }
+
+    .order-item {
+        margin-bottom: 1rem;
+        padding: 1rem;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+    }
+
+    .menu-select {
+        width: 100%;
+        padding: 0.8rem;
+        margin-bottom: 1rem;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        font-size: 1rem;
+    }
+
+    .remove-item {
+        padding: 0.5rem 1rem;
+        background-color: #f44336;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-top: 0.5rem;
+    }
+
+    .remove-item:hover {
+        background-color: #d32f2f;
     }
 
     @media (max-width: 768px) {
