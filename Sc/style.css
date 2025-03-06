@@ -1,0 +1,486 @@
+/* Reset default styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Global styles with optimized fonts */
+body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    line-height: 1.6;
+    color: #333;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+}
+
+/* Header styles with improved performance */
+header {
+    background-color: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+    will-change: transform;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 5%;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.logo img {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+}
+
+.logo h1 {
+    font-size: 1.6rem;
+    color: #e65100;
+    font-weight: 700;
+}
+
+.nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: color 0.3s ease;
+}
+
+.nav-links a:hover {
+    color: #e65100;
+}
+
+/* Mobile menu toggle */
+.menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 1.8rem;
+    cursor: pointer;
+    color: #333;
+}
+
+/* Hero Section with optimized background */
+.hero {
+    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('/Aset/hero-bg.jpg') no-repeat center/cover;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    padding: 0 2rem;
+    margin-top: 75px;
+}
+
+.hero-content {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    color: #fff;
+}
+
+.hero-content h1 {
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    margin-bottom: 1.5rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.hero-content p {
+    font-size: clamp(1.1rem, 3vw, 1.4rem);
+    margin-bottom: 2.5rem;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+
+.cta-button {
+    display: inline-block;
+    padding: 1rem 2.5rem;
+    background-color: #e65100;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.cta-button:hover {
+    background-color: #ff6f00;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(230,81,0,0.2);
+}
+
+/* Menu Section with improved grid */
+.menu {
+    padding: 5rem 2rem;
+    background-color: #f8f8f8;
+}
+
+.menu h2 {
+    text-align: center;
+    margin-bottom: 3rem;
+    color: #e65100;
+    font-size: clamp(2.2rem, 4vw, 3rem);
+    font-weight: 700;
+}
+
+.menu-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.menu-item {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.menu-item:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+}
+
+.menu-item img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+}
+
+.menu-item h3 {
+    padding: 1rem;
+    color: #e65100;
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.menu-item p {
+    padding: 0 1rem;
+    color: #666;
+    font-size: 1.1rem;
+}
+
+.price {
+    display: block;
+    padding: 1rem;
+    font-weight: 700;
+    color: #e65100;
+    font-size: 1.2rem;
+    margin-top: auto;
+}
+
+.order-button {
+    width: 100%;
+    padding: 1rem;
+    background: #e65100;
+    border: none;
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: auto;
+}
+
+.order-button:hover {
+    background: #ff6f00;
+}
+
+.order-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+/* About Section with flexible layout */
+.about {
+    padding: 5rem 2rem;
+}
+
+.about h2 {
+    text-align: center;
+    margin-bottom: 3rem;
+    color: #e65100;
+    font-size: clamp(2.2rem, 4vw, 3rem);
+    font-weight: 700;
+}
+
+.about-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 3rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    align-items: center;
+    padding: 0 1rem;
+}
+
+.about-content img {
+    width: 100%;
+    border-radius: 12px;
+    height: auto;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.about-text {
+    padding: 1rem;
+    font-size: 1.1rem;
+    color: #444;
+}
+
+/* Contact Section with improved form */
+.contact {
+    padding: 5rem 2rem;
+    background-color: #f8f8f8;
+}
+
+.contact h2 {
+    text-align: center;
+    margin-bottom: 3rem;
+    color: #e65100;
+    font-size: clamp(2.2rem, 4vw, 3rem);
+    font-weight: 700;
+}
+
+.contact-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.contact-info {
+    padding: 2rem;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+}
+
+.contact-info h3 {
+    color: #e65100;
+    margin-bottom: 1.5rem;
+    font-size: 1.4rem;
+    font-weight: 600;
+}
+
+.contact-info p {
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    color: #444;
+}
+
+.contact-info i {
+    color: #e65100;
+    margin-right: 0.8rem;
+    font-size: 1.2rem;
+}
+
+.contact-form {
+    padding: 2rem;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+}
+
+.contact-form h3 {
+    color: #e65100;
+    margin-bottom: 1.5rem;
+    font-size: 1.4rem;
+    font-weight: 600;
+}
+
+.contact-form form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.contact-form input,
+.contact-form textarea {
+    padding: 1rem;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus {
+    border-color: #e65100;
+    outline: none;
+}
+
+.contact-form button {
+    padding: 1rem;
+    background: #e65100;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.contact-form button:hover {
+    background: #ff6f00;
+    transform: translateY(-2px);
+}
+
+/* Footer with optimized spacing */
+footer {
+    background: #333;
+    color: #fff;
+    padding: 2rem 1rem;
+}
+
+.footer-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.social-links {
+    margin-bottom: 1rem;
+}
+
+.social-links a {
+    color: #fff;
+    margin: 0 0.8rem;
+    font-size: 1.6rem;
+    transition: color 0.3s ease;
+}
+
+.social-links a:hover {
+    color: #e65100;
+}
+
+/* Enhanced Responsive Design */
+@media (max-width: 768px) {
+    .menu-toggle {
+        display: block;
+    }
+
+    .navbar {
+        position: relative;
+        padding: 1rem 2rem;
+    }
+
+    .nav-links {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: #fff;
+        padding: 1.5rem;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .nav-links.active {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+    }
+
+    .hero {
+        min-height: 85vh;
+    }
+}
+
+@media (max-width: 480px) {
+    .navbar {
+        padding: 0.8rem 1.5rem;
+    }
+
+    .logo img {
+        width: 45px;
+        height: 45px;
+    }
+
+    .logo h1 {
+        font-size: 1.3rem;
+    }
+
+    .menu-item {
+        margin: 0 0.5rem;
+    }
+
+    .contact-form,
+    .contact-info {
+        padding: 1.5rem;
+    }
+}
+
+/* Performance optimizations */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+
+/* Print styles */
+@media print {
+    .hero,
+    .nav-links,
+    .cta-button,
+    .order-button,
+    .contact-form,
+    .social-links {
+        display: none;
+    }
+}
+
+.quantity-input {
+    width: 60px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.quantity-input::-webkit-inner-spin-button,
+.quantity-input::-webkit-outer-spin-button {
+    opacity: 1;
+    height: 24px;
+}
+
+.stock-info {
+    display: block;
+    margin: 5px 0;
+    font-size: 0.9em;
+    color: #666;
+}
+
+.low-stock {
+    color: #f44336;
+}
