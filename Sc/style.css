@@ -1,3 +1,4 @@
+
 /* Reset default styles */
 * {
     margin: 0;
@@ -209,6 +210,11 @@ header {
 
 .order-button:hover {
     background: #ff6f00;
+}
+
+.order-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
 }
 
 /* About Section with flexible layout */
@@ -452,4 +458,30 @@ footer {
     .social-links {
         display: none;
     }
+}
+
+.quantity-input {
+    width: 60px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.quantity-input::-webkit-inner-spin-button,
+.quantity-input::-webkit-outer-spin-button {
+    opacity: 1;
+    height: 24px;
+}
+
+.stock-info {
+    display: block;
+    margin: 5px 0;
+    font-size: 0.9em;
+    color: #666;
+}
+
+.low-stock {
+    color: #f44336;
 }

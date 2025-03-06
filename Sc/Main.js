@@ -1,3 +1,4 @@
+
 // Wait for DOM content to be fully loaded
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize components
@@ -6,7 +7,108 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeContactForm();
     initializeAnimations();
     initializeResponsive();
+    stockManagement.updateStockDisplay();
 });
+
+// Stock management system
+const stockManagement = {
+    // Shared stock for all mie variants
+    mieStock: {
+        total: 100, // Initial stock of mie that's shared across all variants
+        variants: [
+            'Mie Ayam Polos',
+            'Mie Ayam Original', 
+            'Mie Ayam Bakso',
+            'Mie Ayam Ceker'
+        ]
+    },
+    // Individual stock for drinks
+    minumanStock: {
+        'Es Teh Jumbo': 50,
+        'Es Jeruk': 40,
+        'Es Cappucino': 30,
+        'Es Permen Karet': 25,
+        'Es Taro': 25
+    },
+    
+    // Check if item is a mie variant
+    isMieVariant: function(itemName) {
+        return this.mieStock.variants.some(variant => 
+            itemName.toLowerCase().includes(variant.toLowerCase()));
+    },
+    
+    // Method to check stock
+    checkStock: function(itemName, quantity) {
+        if (this.isMieVariant(itemName)) {
+            return this.mieStock.total >= quantity;
+        } else {
+            return this.minumanStock[itemName] >= quantity;
+        }
+    },
+    
+    // Method to update stock
+    updateStock: function(itemName, quantity) {
+        if (this.isMieVariant(itemName)) {
+            if (this.checkStock(itemName, quantity)) {
+                this.mieStock.total -= quantity;
+                this.updateStockDisplay();
+                return true;
+            }
+        } else if (this.minumanStock[itemName]) {
+            if (this.checkStock(itemName, quantity)) {
+                this.minumanStock[itemName] -= quantity;
+                this.updateStockDisplay();
+                return true;
+            }
+        }
+        return false;
+    },
+
+    // Update stock display in UI
+    updateStockDisplay: function() {
+        const menuItems = document.querySelectorAll('.menu-item');
+        menuItems.forEach(item => {
+            const itemName = item.querySelector('h3').textContent;
+            const stockSpan = item.querySelector('.stock-info') || 
+                            this.createStockSpan(item);
+            
+            if (this.isMieVariant(itemName)) {
+                stockSpan.textContent = `Stok: ${this.mieStock.total}`;
+                if (this.mieStock.total <= 10) {
+                    stockSpan.classList.add('low-stock');
+                }
+                if (this.mieStock.total === 0) {
+                    item.querySelector('.order-button').disabled = true;
+                }
+            } else if (this.minumanStock[itemName]) {
+                const drinkStock = this.minumanStock[itemName];
+                stockSpan.textContent = `Stok: ${drinkStock}`;
+                if (drinkStock <= 10) {
+                    stockSpan.classList.add('low-stock');
+                }
+                if (drinkStock === 0) {
+                    item.querySelector('.order-button').disabled = true;
+                }
+            }
+        });
+    },
+
+    createStockSpan: function(menuItem) {
+        const stockSpan = document.createElement('span');
+        stockSpan.className = 'stock-info';
+        menuItem.insertBefore(stockSpan, menuItem.querySelector('.order-button'));
+        return stockSpan;
+    }
+};
+
+function showCurrentStock() {
+    console.log('Current Stock Status:');
+    console.log(`Mie: ${stockManagement.mieStock.total}`);
+    console.log('Minuman:');
+    Object.entries(stockManagement.minumanStock).forEach(([item, stock]) => {
+        console.log(`${item}: ${stock}`);
+    });
+}
 
 // Navigation functionality
 function initializeNavigation() {
@@ -103,20 +205,17 @@ function showOrderModal(itemName, price) {
 
     document.body.appendChild(modal);
 
-    // Add new item functionality
+    // Enable add item button by default since we have initial item with quantity 1
     const addItemBtn = modal.querySelector('.add-item-btn');
     const orderItems = modal.querySelector('#orderItems');
     
-    // Enable add item button when quantity is selected for current item
+    // Remove the disabled attribute from add-item button
+    addItemBtn.removeAttribute('disabled');
+
+    // Remove the input event listener that controls button state
     const firstQuantityInput = modal.querySelector('input[type="number"]');
-    firstQuantityInput.addEventListener('input', () => {
-        if (parseInt(firstQuantityInput.value) > 0) {
-            addItemBtn.disabled = false;
-        } else {
-            addItemBtn.disabled = true;
-        }
-    });
-    
+    firstQuantityInput.removeEventListener('input', () => {});
+
     addItemBtn.addEventListener('click', () => {
         const menuItems = document.querySelectorAll('.menu-item');
         const selectHTML = `
@@ -142,39 +241,20 @@ function showOrderModal(itemName, price) {
         `;
 
         orderItems.appendChild(newItem);
-        addItemBtn.disabled = true;
 
         const select = newItem.querySelector('.menu-select');
         const quantityDiv = newItem.querySelector('.quantity-selector');
-        const quantityInput = quantityDiv.querySelector('input[type="number"]');
 
         select.addEventListener('change', function() {
             if (this.value) {
                 quantityDiv.style.display = 'block';
             } else {
                 quantityDiv.style.display = 'none';
-                addItemBtn.disabled = true;
-            }
-        });
-
-        quantityInput.addEventListener('input', () => {
-            if (parseInt(quantityInput.value) > 0) {
-                addItemBtn.disabled = false;
-            } else {
-                addItemBtn.disabled = true;
             }
         });
 
         newItem.querySelector('.remove-item').addEventListener('click', () => {
             newItem.remove();
-            // Enable add item button after removing an item
-            const lastItem = orderItems.querySelector('.order-item:last-child');
-            if (lastItem) {
-                const lastQuantityInput = lastItem.querySelector('input[type="number"]');
-                if (lastQuantityInput && parseInt(lastQuantityInput.value) > 0) {
-                    addItemBtn.disabled = false;
-                }
-            }
         });
     });
 
@@ -195,72 +275,74 @@ function showOrderModal(itemName, price) {
         }
 
         let totalPrice = 0;
-        let orderMessage = `Halo, saya ingin memesan:\n\n`;
+        const orderItems = [];
 
-        const orderItems = modal.querySelectorAll('.order-item');
-        let hasValidOrder = false;
+        // Collect all order items
+        modal.querySelectorAll('.order-item').forEach((item, index) => {
+            let itemName, price, quantity;
+            quantity = parseInt(item.querySelector('input[type="number"]').value);
 
-        // Create a map to store combined quantities for same items
-        const itemMap = new Map();
-
-        orderItems.forEach((item, index) => {
-            const select = item.querySelector('.menu-select');
-            const quantity = parseInt(item.querySelector('input[type="number"]').value);
-            
-            let itemName, price;
             if (index === 0) {
                 itemName = item.querySelector('p').textContent.replace('Item: ', '');
-                price = item.querySelector('p:nth-child(2)').textContent.replace('Harga: ', '');
+                price = parseInt(item.querySelector('p:nth-child(2)').textContent.replace(/\D/g, ''));
             } else {
-                if (select.value) {
-                    itemName = select.options[select.selectedIndex].text;
-                    price = select.value;
-                } else {
-                    return;
-                }
+                const select = item.querySelector('.menu-select');
+                if (!select.value) return;
+                itemName = select.options[select.selectedIndex].text;
+                price = parseInt(select.value.replace(/\D/g, ''));
             }
 
             if (quantity < 1) return;
 
-            hasValidOrder = true;
-            const priceNum = parseInt(price.replace(/\D/g, ''));
-
-            // Combine quantities for same items
-            if (itemMap.has(itemName)) {
-                const existingItem = itemMap.get(itemName);
-                existingItem.quantity += quantity;
-                existingItem.total = existingItem.quantity * priceNum;
-            } else {
-                itemMap.set(itemName, {
-                    quantity: quantity,
-                    price: priceNum,
-                    total: quantity * priceNum
-                });
+            // Check stock availability
+            if (!stockManagement.checkStock(itemName, quantity)) {
+                showNotification(`Stok ${itemName} tidak mencukupi!`, 'error');
+                return;
             }
+
+            const subtotal = price * quantity;
+            totalPrice += subtotal;
+
+            orderItems.push({
+                name: itemName,
+                quantity: quantity,
+                price: price,
+                subtotal: subtotal
+            });
+
+            // Update stock
+            stockManagement.updateStock(itemName, quantity);
         });
 
-        if (!hasValidOrder) {
-            showNotification('Mohon pilih minimal satu menu', 'error');
+        if (orderItems.length === 0) {
+            showNotification('Mohon pilih menu yang akan dipesan', 'error');
             return;
         }
 
-        // Generate order message from combined items
-        itemMap.forEach((value, key) => {
-            orderMessage += `${key}\n`;
-            orderMessage += `Jumlah: ${value.quantity}\n`;
-            orderMessage += `Subtotal: Rp ${value.total.toLocaleString('id-ID')}\n\n`;
-            totalPrice += value.total;
+        // Format WhatsApp message
+        let message = `*PESANAN BARU*\n\n`;
+        message += `*Detail Pesanan:*\n`;
+        
+        orderItems.forEach(item => {
+            message += `━━━━━━━━━━━━━━━\n`;
+            message += `*${item.name}*\n`;
+            message += `Jumlah: ${item.quantity}\n`;
+            message += `Harga: Rp ${item.price.toLocaleString('id-ID')}\n`;
+            message += `Subtotal: Rp ${item.subtotal.toLocaleString('id-ID')}\n`;
         });
+        
+        message += `\n*Total Pesanan: Rp ${totalPrice.toLocaleString('id-ID')}*\n\n`;
+        message += `*Data Pemesan:*\n`;
+        message += `Nama: ${customerName}\n`;
+        message += `Alamat: ${customerAddress}`;
 
-        orderMessage += `Total Harga: Rp ${totalPrice.toLocaleString('id-ID')}\n\n`;
-        orderMessage += `Nama: ${customerName}\n`;
-        orderMessage += `Alamat: ${customerAddress}`;
-
+        // Send to WhatsApp
         const phoneNumber = '6289514656979';
-        const whatsappURL = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${encodeURIComponent(orderMessage)}`;
+        const whatsappURL = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${encodeURIComponent(message)}`;
         
         window.open(whatsappURL, '_blank');
         modal.remove();
+        showNotification('Pesanan berhasil dikirim!', 'success');
     });
 
     modal.querySelector('.cancel-order').addEventListener('click', () => {
@@ -273,6 +355,37 @@ function showOrderModal(itemName, price) {
             modal.remove();
         }
     });
+}
+
+// Add this function to handle WhatsApp API integration
+async function sendWhatsAppOrder(orderData) {
+    try {
+        // Format message
+        let message = `*PESANAN BARU*\n\n`;
+        message += `*Detail Pesanan:*\n`;
+        
+        orderData.items.forEach(item => {
+            message += `━━━━━━━━━━━━━━━\n`;
+            message += `${item.name}\n`;
+            message += `Jumlah: ${item.quantity}\n`;
+            message += `Subtotal: Rp ${item.subtotal.toLocaleString('id-ID')}\n`;
+        });
+        
+        message += `\n*Total Harga: Rp ${orderData.totalPrice.toLocaleString('id-ID')}*\n\n`;
+        message += `*Informasi Pemesan:*\n`;
+        message += `Nama: ${orderData.customerName}\n`;
+        message += `Alamat: ${orderData.customerAddress}`;
+
+        // Create WhatsApp URL
+        const whatsappURL = `https://api.whatsapp.com/send?phone=${orderData.phoneNumber}&text=${encodeURIComponent(message)}`;
+        
+        // Open WhatsApp in new window
+        window.open(whatsappURL, '_blank');
+        
+        return Promise.resolve();
+    } catch (error) {
+        return Promise.reject(error);
+    }
 }
 
 // Contact form functionality
