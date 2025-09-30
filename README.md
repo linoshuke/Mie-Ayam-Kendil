@@ -1,6 +1,6 @@
 # Mie Ayam Kendil
 
-Ini adalah website untuk Mie Ayam Kendil. Repository ini awalnya dipersiapkan untuk Ujian Kompetensi Keahlian (UKK), namun nama repository belum sempat diganti.
+Ini adalah website untuk Mie Ayam Kendil. Repository ini awalnya dipersiapkan untuk Ujian Kompetensi Keahlian (UKK), berhubung tidak jadi, untuk sementara belum saya lanjutkan (❁´◡`❁)
 
 ## Daftar Isi
 
